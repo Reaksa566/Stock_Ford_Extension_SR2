@@ -1,9 +1,9 @@
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 const api = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: `${API_BASE_URL}/api`, // Add /api here
 });
 
 // Add request interceptor for debugging
@@ -46,7 +46,6 @@ export const itemsAPI = {
   update: (id, data) => api.put(`/items/${id}`, data),
   delete: (id) => api.delete(`/items/${id}`),
   import: (data) => api.post('/items/import', data),
-  // Add stock adjustment method
   stockAdjustment: (id, data) => api.post(`/items/${id}/stock-adjustment`, data),
 };
 
@@ -63,6 +62,13 @@ export const usersAPI = {
   getAll: () => api.get('/users'),
   update: (id, data) => api.put(`/users/${id}`, data),
   delete: (id) => api.delete(`/users/${id}`),
+};
+
+// Auth API (Add this if missing)
+export const authAPI = {
+  login: (data) => api.post('/auth/login', data),
+  register: (data) => api.post('/auth/register', data),
+  getProfile: () => api.get('/auth/profile'),
 };
 
 export default api;
