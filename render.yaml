@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: stock-ford-backend
+    env: node
+    buildCommand: cd backend && npm install
+    startCommand: cd backend && npm start
+    envVars:
+      - key: MONGODB_URI
+        value: mongodb+srv://reaksawelcome_db_user:qK90tXhTalooCnGo@cluster1.vfl2upr.mongodb.net/stock_ford_extension?retryWrites=true&w=majority
+      - key: JWT_SECRET
+        value: your_jwt_secret_key_here
+      - key: NODE_ENV
+        value: production
+
+  - type: web
+    name: stock-ford-frontend
+    env: static
+    buildCommand: cd frontend && npm install && npm run build
+    staticPublishPath: ./frontend/dist
+    envVars:
+      - key: VITE_API_URL
+        value: https://stock-ford-backend.onrender.com
