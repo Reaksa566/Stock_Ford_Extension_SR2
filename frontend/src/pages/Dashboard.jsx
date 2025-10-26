@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { itemsAPI, reportsAPI } from '../services/api';
-import { Package, Wrench, AlertTriangle, TrendingUp } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Package, Wrench, AlertTriangle, TrendingUp, Plus, FileText } from 'lucide-react';
 
 const Dashboard = () => {
   const [stats, setStats] = useState({
@@ -10,6 +11,7 @@ const Dashboard = () => {
     totalStockValue: 0
   });
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     loadDashboardData();
@@ -28,13 +30,29 @@ const Dashboard = () => {
         totalAccessories: accessoriesRes.data.total,
         totalTools: toolsRes.data.total,
         criticalItems: criticalRes.data.length,
-        totalStockValue: 0 // You can calculate this based on your business logic
+        totalStockValue: accessoriesRes.data.total + toolsRes.data.total
       });
     } catch (error) {
       console.error('Error loading dashboard data:', error);
     } finally {
       setLoading(false);
     }
+  };
+
+  // Quick Actions Handlers
+  const handleAddAccessory = () => {
+    alert('Add New Accessory functionality will be implemented in the Accessories page.');
+    navigate('/accessories');
+  };
+
+  const handleAddTool = () => {
+    alert('Add New Tool functionality will be implemented in the Tools page.');
+    navigate('/tools');
+  };
+
+  const handleGenerateReport = () => {
+    alert('Redirecting to Reports page...');
+    navigate('/reports');
   };
 
   if (loading) {
@@ -117,22 +135,31 @@ const Dashboard = () => {
         <div className="card p-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
           <div className="space-y-3">
-            <button className="w-full text-left p-3 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors">
+            <button 
+              onClick={handleAddAccessory}
+              className="w-full text-left p-3 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors"
+            >
               <div className="flex items-center justify-between">
                 <span className="font-medium">Add New Accessory</span>
-                <Package className="h-5 w-5 text-gray-400" />
+                <Plus className="h-5 w-5 text-gray-400" />
               </div>
             </button>
-            <button className="w-full text-left p-3 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors">
+            <button 
+              onClick={handleAddTool}
+              className="w-full text-left p-3 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors"
+            >
               <div className="flex items-center justify-between">
                 <span className="font-medium">Add New Tool</span>
-                <Wrench className="h-5 w-5 text-gray-400" />
+                <Plus className="h-5 w-5 text-gray-400" />
               </div>
             </button>
-            <button className="w-full text-left p-3 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors">
+            <button 
+              onClick={handleGenerateReport}
+              className="w-full text-left p-3 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors"
+            >
               <div className="flex items-center justify-between">
                 <span className="font-medium">Generate Report</span>
-                <TrendingUp className="h-5 w-5 text-gray-400" />
+                <FileText className="h-5 w-5 text-gray-400" />
               </div>
             </button>
           </div>

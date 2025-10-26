@@ -46,3 +46,10 @@ A comprehensive stock management system for Ford Extension accessories and tools
 ## Environment Variables
 
 ### Backend (.env) 
+
+
+
+
+### https://github.com/Reaksa566/Stock_Ford_Extension_SR2
+
+### https://chat.deepseek.com/a/chat/s/7a6b94e6-67c9-4abe-9a82-b4d8fbe4be69

@@ -8,23 +8,30 @@ const LoginPage = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
+  const { login, user } = useAuth();
   const navigate = useNavigate();
+
+  console.log('LoginPage - Current auth state:', { user });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setLoading(true);
 
+    console.log('📝 Login form submitted');
+
     const result = await login(username, password);
     
+    console.log('📊 Login result:', result);
+    
     if (result.success) {
-      navigate('/dashboard');
+      console.log('🎯 Login successful, redirecting...');
+      // Use window.location for guaranteed redirect
+      window.location.href = '/dashboard';
     } else {
       setError(result.message);
+      setLoading(false);
     }
-    
-    setLoading(false);
   };
 
   return (
@@ -88,10 +95,17 @@ const LoginPage = () => {
           >
             {loading ? 'Signing in...' : 'Sign in'}
           </button>
+
+          <div className="text-center text-sm text-gray-600">
+            <p>Demo Credentials:</p>
+            <p>Admin: admin / admin123</p>
+            <p>User: user / user123</p>
+          </div>
         </form>
       </div>
     </div>
   );
 };
 
-export default LoginPage; 
+// Add default export
+export default LoginPage;

@@ -5,4 +5,4 @@ const Accessories = () => {
   return <ItemList category="accessory" title="Accessories" />;
 };
 
-export default Accessories; 
+export default Accessories;

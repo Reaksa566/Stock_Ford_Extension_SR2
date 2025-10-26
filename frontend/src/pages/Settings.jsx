@@ -15,9 +15,8 @@ const Settings = () => {
 
   const loadUsers = async () => {
     try {
-      // This would be implemented when users API is ready
-      // const response = await usersAPI.getAll();
-      // setUsers(response.data);
+      const response = await usersAPI.getAll();
+      setUsers(response.data);
     } catch (error) {
       console.error('Error loading users:', error);
     }
@@ -26,25 +25,27 @@ const Settings = () => {
   const handleSubmit = async (userData) => {
     try {
       if (editingUser) {
-        // await usersAPI.update(editingUser._id, userData);
+        await usersAPI.update(editingUser._id, userData);
       } else {
-        // await usersAPI.create(userData);
+        await usersAPI.create(userData);
       }
       setShowForm(false);
       setEditingUser(null);
       loadUsers();
     } catch (error) {
       console.error('Error saving user:', error);
+      alert(error.response?.data?.message || 'Error saving user');
     }
   };
 
   const handleDelete = async (userId) => {
     if (window.confirm('Are you sure you want to delete this user?')) {
       try {
-        // await usersAPI.delete(userId);
+        await usersAPI.delete(userId);
         loadUsers();
       } catch (error) {
         console.error('Error deleting user:', error);
+        alert(error.response?.data?.message || 'Error deleting user');
       }
     }
   };
@@ -99,7 +100,7 @@ const Settings = () => {
                     >
                       <Edit className="h-4 w-4" />
                     </button>
-                    {user._id !== currentUser._id && (
+                    {user._id !== currentUser.id && (
                       <button
                         onClick={() => handleDelete(user._id)}
                         className="p-1 text-red-600 hover:text-red-800"
@@ -207,4 +208,4 @@ const UserForm = ({ user, onSubmit, onClose }) => {
   );
 };
 
-export default Settings; 
+export default Settings;

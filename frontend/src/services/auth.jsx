@@ -16,20 +16,27 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-      checkAuth();
-    } else {
-      setLoading(false);
-    }
+    checkAuth();
   }, []);
 
   const checkAuth = async () => {
+    const token = localStorage.getItem('token');
+    console.log('🔍 Checking auth, token exists:', !!token);
+    
+    if (!token) {
+      setLoading(false);
+      return;
+    }
+
     try {
-      const response = await axios.get('/api/auth/me');
+      // Set the authorization header
+      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      
+      const response = await axios.get('http://localhost:5000/api/auth/me');
+      console.log('✅ Auth check successful:', response.data.user);
       setUser(response.data.user);
     } catch (error) {
+      console.error('❌ Auth check failed:', error);
       localStorage.removeItem('token');
       delete axios.defaults.headers.common['Authorization'];
     } finally {
@@ -39,23 +46,34 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (username, password) => {
     try {
-      const response = await axios.post('/api/auth/login', { username, password });
-      const { token, user } = response.data;
+      console.log('🔐 Attempting login for:', username);
       
+      // Use absolute URL to avoid proxy issues
+      const response = await axios.post('http://localhost:5000/api/auth/login', {
+        username,
+        password
+      });
+      
+      const { token, user } = response.data;
+      console.log('✅ Login successful, user:', user);
+
+      // Store token and update state
       localStorage.setItem('token', token);
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       setUser(user);
       
       return { success: true };
     } catch (error) {
+      console.error('❌ Login failed:', error.response?.data || error.message);
       return { 
         success: false, 
-        message: error.response?.data?.message || 'Login failed' 
+        message: error.response?.data?.message || 'Login failed. Please check if backend is running.' 
       };
     }
   };
 
   const logout = () => {
+    console.log('🚪 Logging out');
     localStorage.removeItem('token');
     delete axios.defaults.headers.common['Authorization'];
     setUser(null);
