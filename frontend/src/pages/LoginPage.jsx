@@ -26,8 +26,8 @@ const LoginPage = () => {
     
     if (result.success) {
       console.log('🎯 Login successful, redirecting...');
-      // Use window.location for guaranteed redirect
-      window.location.href = '/dashboard';
+      // FIXED: Use navigate instead of window.location.href
+      navigate('/dashboard');
     } else {
       setError(result.message);
       setLoading(false);
