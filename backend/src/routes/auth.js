@@ -47,4 +47,20 @@ router.get('/me', auth, async (req, res) => {
   });
 });
 
+// Temporary route to create admin user
+router.post('/create-admin', async (req, res) => {
+  try {
+    const User = require('../models/User');
+    const adminUser = new User({
+      username: 'admin',
+      password: 'admin123',
+      role: 'admin'
+    });
+    await adminUser.save();
+    res.json({ message: 'Admin user created successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error creating admin user' });
+  }
+});
+
 module.exports = router; 
