@@ -30,7 +30,36 @@ const auth = async (req, res, next) => {
 
 // Your existing login route
 router.post('/login', async (req, res) => {
-  // ... your existing login code ...
+  try {
+    const { username, password } = req.body;
+
+    if (!username || !password) {
+      return res.status(400).json({ message: 'Please provide username and password' });
+    }
+
+    const user = await User.findOne({ username });
+    if (!user || !(await user.correctPassword(password, user.password))) {
+      return res.status(401).json({ message: 'Invalid credentials' });
+    }
+
+    const token = jwt.sign(
+      { id: user._id, username: user.username, role: user.role },
+      process.env.JWT_SECRET || 'fallback-secret',
+      { expiresIn: '7d' }
+    );
+
+    res.json({
+      token,
+      user: {
+        id: user._id,
+        username: user.username,
+        role: user.role
+      }
+    });
+  } catch (error) {
+    console.error('Login error:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
 });
 
 // ADD THIS ROUTE - /api/auth/me
