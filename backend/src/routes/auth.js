@@ -37,20 +37,17 @@ router.post('/login', async (req, res) => {
   }
 });
 
-router.get('/me', auth, async (req, res) => {
-  res.json({
-    user: {
-      id: req.user._id,
-      username: req.user.username,
-      role: req.user.role
-    }
-  });
-});
-
-// Temporary route to create admin user
-router.post('/create-admin', async (req, res) => {
+// Change from POST to GET
+router.get('/create-admin', async (req, res) => {
   try {
     const User = require('../models/User');
+    
+    // Check if admin already exists
+    const existingAdmin = await User.findOne({ username: 'admin' });
+    if (existingAdmin) {
+      return res.json({ message: 'Admin user already exists' });
+    }
+    
     const adminUser = new User({
       username: 'admin',
       password: 'admin123',
@@ -59,6 +56,7 @@ router.post('/create-admin', async (req, res) => {
     await adminUser.save();
     res.json({ message: 'Admin user created successfully' });
   } catch (error) {
+    console.error('Error creating admin:', error);
     res.status(500).json({ message: 'Error creating admin user' });
   }
 });
