@@ -1,64 +1,54 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
-const { auth } = require('../middleware/auth');
 
 const router = express.Router();
 
-router.post('/login', async (req, res) => {
+// Add auth middleware (simple version)
+const auth = async (req, res, next) => {
   try {
-    const { username, password } = req.body;
-
-    if (!username || !password) {
-      return res.status(400).json({ message: 'Please provide username and password' });
+    const token = req.header('Authorization')?.replace('Bearer ', '');
+    
+    if (!token) {
+      return res.status(401).json({ message: 'No token provided' });
     }
 
-    const user = await User.findOne({ username });
-    if (!user || !(await user.correctPassword(password, user.password))) {
-      return res.status(401).json({ message: 'Invalid credentials' });
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'fallback-secret');
+    const user = await User.findById(decoded.id);
+    
+    if (!user) {
+      return res.status(401).json({ message: 'User not found' });
     }
 
-    const token = jwt.sign(
-      { id: user._id, username: user.username, role: user.role },
-      process.env.JWT_SECRET,
-      { expiresIn: '7d' }
-    );
+    req.user = user;
+    next();
+  } catch (error) {
+    console.error('Auth middleware error:', error);
+    res.status(401).json({ message: 'Invalid token' });
+  }
+};
 
+// Your existing login route
+router.post('/login', async (req, res) => {
+  // ... your existing login code ...
+});
+
+// ADD THIS ROUTE - /api/auth/me
+router.get('/me', auth, async (req, res) => {
+  try {
+    console.log('✅ /me route called for user:', req.user.username);
+    
     res.json({
-      token,
       user: {
-        id: user._id,
-        username: user.username,
-        role: user.role
+        id: req.user._id,
+        username: req.user.username,
+        role: req.user.role
       }
     });
   } catch (error) {
+    console.error('❌ /me route error:', error);
     res.status(500).json({ message: 'Server error' });
   }
 });
 
-// Change from POST to GET
-router.get('/create-admin', async (req, res) => {
-  try {
-    const User = require('../models/User');
-    
-    // Check if admin already exists
-    const existingAdmin = await User.findOne({ username: 'admin' });
-    if (existingAdmin) {
-      return res.json({ message: 'Admin user already exists' });
-    }
-    
-    const adminUser = new User({
-      username: 'admin',
-      password: 'admin123',
-      role: 'admin'
-    });
-    await adminUser.save();
-    res.json({ message: 'Admin user created successfully' });
-  } catch (error) {
-    console.error('Error creating admin:', error);
-    res.status(500).json({ message: 'Error creating admin user' });
-  }
-});
-
-module.exports = router; 
+module.exports = router;
