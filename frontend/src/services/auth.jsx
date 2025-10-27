@@ -32,7 +32,7 @@ export const AuthProvider = ({ children }) => {
       // Set the authorization header
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       
-      const response = await axios.get('http://localhost:5000/api/auth/me');
+      const response = await axios.get('https://stock-ford-backend.onrender.com/api/auth/me');
       console.log('✅ Auth check successful:', response.data.user);
       setUser(response.data.user);
     } catch (error) {
@@ -48,8 +48,8 @@ export const AuthProvider = ({ children }) => {
     try {
       console.log('🔐 Attempting login for:', username);
       
-      // Use absolute URL to avoid proxy issues
-      const response = await axios.post('http://localhost:5000/api/auth/login', {
+      // Use deployed backend URL
+      const response = await axios.post('https://stock-ford-backend.onrender.com/api/auth/login', {
         username,
         password
       });
